@@ -1,6 +1,7 @@
 import requests
 import json
 import argparse
+import logging
 from bs4 import BeautifulSoup
 from datetime import datetime
 from selenium import webdriver
@@ -8,6 +9,12 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support import expected_conditions as EC
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
 
 
 class FlyerParser:
@@ -52,19 +59,19 @@ class FlyerParser:
         self.parsed_flyers = []
 
     def write_flyers_to_file(self, file_name):
-        print("Writing flyers data to file")
+        logging.info("Writing flyers data to file")
         try:
             with open(file_name, "w", encoding="utf-8") as f:
                 json.dump(self.parsed_flyers, f, ensure_ascii=False, indent=4)
         except IOError as e:
-            print(f"Failed to write to file, Error: {e}")
+            logging.error(f"Failed to write to file, Error: {e}")
 
     def parse_flyers_category(self, category):
         try:
             self.parsed_flyers = []
             webpage_url = self.base_url + category
             response = requests.get(webpage_url)
-            print(f"Website {webpage_url} has been successfully parsed")
+            logging.info(f"Website {webpage_url} has been successfully parsed")
             soup = BeautifulSoup(response.text, "html.parser")
             category_dropdown = soup.select_one(
                 f'a[href="{category}"]'
@@ -75,14 +82,16 @@ class FlyerParser:
                 self.parse_category_shop(link.get("href"), link.get_text())
 
         except requests.RequestException as e:
-            print(f"Parsing failed: unable to get webpage at {webpage_url}, Error: {e}")
+            logging.error(
+                f"Parsing failed: unable to get webpage at {webpage_url}, Error: {e}"
+            )
 
         except Exception as e:
-            print(f"Error occured: {e}")
+            logging.error(f"Error occured: {e}")
 
         finally:
             self.driver.quit()
-            print(
+            logging.info(
                 f"Parsing completed, number of flyers parsed: {len(self.parsed_flyers)}"
             )
 
@@ -99,16 +108,16 @@ class FlyerParser:
             )
 
         except TimeoutException:
-            print(f"Flyers not found for shop {shop_name}")
+            logging.warning(f"Flyers not found for shop {shop_name}")
             return
 
         except Exception as e:
-            print(f"Error occured: {e}")
+            logging.error(f"Error occured: {e}")
 
         for flyer in flyers:
             self.parse_flyer(flyer, shop_name)
 
-        print(
+        logging.info(
             f"Parsing {shop_name} flyers done, number of flyers parsed: {len(flyers)}"
         )
 
@@ -153,7 +162,7 @@ class FlyerParser:
                 }
             )
         except Exception as e:
-            print(f"Failed to parse flyer in {shop_name}, Error: {e}")
+            logging.error(f"Failed to parse flyer in {shop_name}, Error: {e}")
 
 
 if __name__ == "__main__":
