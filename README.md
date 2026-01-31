@@ -13,7 +13,7 @@ Install the required Python packages:
 pip install requests beautifulsoup4 selenium
 ```
 
-# Run the parser
+## Run the parser
 
 ```bash
 python .\flyer_parser.py
