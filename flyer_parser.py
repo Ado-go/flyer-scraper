@@ -24,6 +24,10 @@ class FlyerParser:
     This class uses `requests` and `BeautifulSoup` for basic HTML parsing and `Selenium`
     for dynamically loaded content, such as flyers from specific shops.
 
+    The script can be controlled from the command line using argparse:
+    --category : Flyer category to parse (default: "/hypermarkte/")
+    --output   : Name of the output JSON file (default: "parsed_flyers.json")
+
     Attributes:
         base_url (str): The base URL of the website containing the flyers.
         driver (selenium.webdriver.Chrome): Chrome browser instance used by Selenium.

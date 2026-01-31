@@ -19,11 +19,26 @@ pip install requests beautifulsoup4 selenium
 python .\flyer_parser.py
 ```
 
+### Command-line arguments
+
+You can control the parser using the following optional arguments:
+
+| Argument     | Description                  | Default              |
+| ------------ | ---------------------------- | -------------------- |
+| `--category` | Shop category to parse       | `/hypermarkte/`      |
+| `--output`   | Name of the output JSON file | `parsed_flyers.json` |
+
+Example:
+
+```bash
+python flyer_parser.py --category /elektronik/ --output elektronik_flyers.json
+```
+
 ## Features
 
 The program:
 
-- processes a selected flyer category,
+- processes a selected shop category,
 - discovers all shops within that category,
 - loads flyers for each shop using Selenium,
 - extracts the following information:
