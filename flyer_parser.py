@@ -1,5 +1,6 @@
 import requests
 import json
+import argparse
 from bs4 import BeautifulSoup
 from datetime import datetime
 from selenium import webdriver
@@ -11,7 +12,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 class FlyerParser:
     """
-    FlyerParser is a class for scraping, parsing, and saving flyers from a website.
+    FlyerParser is a class for scraping, parsing, and saving flyers from https://www.prospektmaschine.de website.
 
     This class uses `requests` and `BeautifulSoup` for basic HTML parsing and `Selenium`
     for dynamically loaded content, such as flyers from specific shops.
@@ -60,6 +61,7 @@ class FlyerParser:
 
     def parse_flyers_category(self, category):
         try:
+            self.parsed_flyers = []
             webpage_url = self.base_url + category
             response = requests.get(webpage_url)
             print(f"Website {webpage_url} has been successfully parsed")
@@ -156,10 +158,20 @@ class FlyerParser:
 
 if __name__ == "__main__":
 
+    parser = argparse.ArgumentParser(description="Flyer scraper")
+
+    parser.add_argument(
+        "--category", default="/hypermarkte/", help="Shop category, e.g. /hypermarkte/"
+    )
+
+    parser.add_argument(
+        "--output", default="parsed_flyers.json", help="Output JSON file name"
+    )
+
+    args = parser.parse_args()
+
     BASE_URL = "https://www.prospektmaschine.de"
-    CATEGORY = "/hypermarkte/"
-    FILE_NAME = "parsed_flyers.json"
 
     web_parser = FlyerParser(BASE_URL)
-    web_parser.parse_flyers_category(CATEGORY)
-    web_parser.write_flyers_to_file(FILE_NAME)
+    web_parser.parse_flyers_category(args.category)
+    web_parser.write_flyers_to_file(args.output)
